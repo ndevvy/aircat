@@ -14,7 +14,7 @@
 
 class Cat < ActiveRecord::Base
 
-COLORS = %w(orange black white grey calico)
+  COLORS = %w(orange black white grey calico)
 
   validates :name, presence: true
   validates :sex, inclusion: { in: %w(M F),

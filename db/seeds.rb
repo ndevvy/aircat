@@ -6,16 +6,18 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-
-#  id          :integer          not null, primary key
-#  birth_date  :date
-#  color       :string
-#  name        :string
-#  sex         :string(1)
-#  description :text
-#  created_at  :datetime
-#  updated_at  :datetime
-
+# == Schema Information
+#
+# Table name: cat_rental_requests
+#
+#  id         :integer          not null, primary key
+#  cat_id     :integer
+#  start_date :date
+#  end_date   :date
+#  status     :string           default("PENDING")
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 
 cats = Cat.create([ { name: 'Gizmo', birth_date: Date.today - 2000,
                       color: "black", sex: "F", description: "Ned's cat"},
@@ -24,3 +26,8 @@ cats = Cat.create([ { name: 'Gizmo', birth_date: Date.today - 2000,
                     { name: 'Ivan', birth_date: Date.today - 2000, color: "white",
                       sex: 'M', description: 'A lovely individual with many fond memories of Nicole' }
                       ])
+
+requests = CatRentalRequest.create([
+    {cat_id: 3, start_date: Date.today - 3, end_date: Date.today - 2, status: "APPROVED"},
+    {cat_id: 3, start_date: Date.today - 4, end_date: Date.today - 2, status: "APPROVED"}
+  ])

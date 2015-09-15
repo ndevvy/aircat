@@ -1,0 +1,36 @@
+<h2><%= @cat.name %>'s Stats </h2>
+
+<!-- <table>
+  <tr>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Color</th>
+    <th>Sex</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><%= @cat.name  %> </td>
+    <td><%= @cat.age   %> </td>
+    <td><%= @cat.color %> </td>
+    <td><%= @cat.sex   %> </td>
+    <td><%= @cat.description  %> </td>
+  </tr>
+</table> -->
+
+<table>
+  <tr>
+    <% Cat.attribute_names.each do |data| %>
+    <th>
+      <%= data %>
+    </th>
+    <% end %>
+  </tr>
+
+  <tr>
+    <% Cat.attribute_names.each do |data| %>
+    <td>
+      <%= @cat.send(data) %>
+    </td>
+  <% end %>
+</tr>
+</table>

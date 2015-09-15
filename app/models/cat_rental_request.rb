@@ -17,40 +17,35 @@ class CatRentalRequest < ActiveRecord::Base
 
   validates :cat_id, :start_date, :end_date, :status, presence: true
   validates :status, inclusion: { in: STATUSES, message: "%{value} is not a valid status" }
+  validate :no_overlapping_approved_requests
 
+  belongs_to :cat
 
   def overlapping_requests
     params = self.attributes
     results = []
-    
-    results << CatRentalRequest.where(
-    "start_date BETWEEN :start_date AND :end_date
-    AND cat_id = :cat_id AND id != :id",
-    { start_date: params["start_date"], end_date: params["end_date"], cat_id: params["cat_id"], id: params["id"] }
-    )
 
-    results << CatRentalRequest.where(
-    ":start_date BETWEEN start_date AND end_date
-    AND :cat_id = cat_id AND id != :id",
-    { start_date: params["start_date"], end_date: params["end_date"], cat_id: params["cat_id"], id: params["id"] }
+    CatRentalRequest.where(cat_id: cat_id).
+    where(<<-SQL, {start_date: start_date, end_date: end_date, id: id})
+      id != :id
+    AND
+    (
+        start_date BETWEEN :start_date AND :end_date
+      OR
+        :start_date BETWEEN start_date AND end_date
     )
-
+    SQL
   end
 
-    # results = CatRentalRequest.find_by_sql(<<-SQL)
-    #   SELECT
-    #     *
-    #   FROM
-    #     cat_rental_requests
-    #   WHERE
-    #     cat_rental_requests.start_date BETWEEN #{self.start_date} AND #{self.end_date}
-    #     OR #{self.start_date} BETWEEN cat_rental_requests.start_date
-    #     AND cat_rental_requests.end_date AND #{self.id} != cat_rental_requests.id
-    #     AND #{self.cat_id} = .cat_id
-    # SQL
 
   def overlapping_approved_requests
-    overlapping_requests.select { |request| request.rental_a_status == "APPROVED" && request.rental_b_status == "APPROVED"}
+    overlapping_requests.where(status: :APPROVED)
+  end
+
+  def no_overlapping_approved_requests
+    unless overlapping_approved_requests.empty?
+      errors[:dates] << "cannot approve two overlapping requests"
+    end
   end
 
 end

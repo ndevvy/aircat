@@ -17,7 +17,7 @@ class CatRentalRequest < ActiveRecord::Base
 
   validates :cat_id, :start_date, :end_date, :status, presence: true
   validates :status, inclusion: { in: STATUSES, message: "%{value} is not a valid status" }
-  validate :no_overlapping_approved_requests
+  validate  :no_overlapping_approved_requests
 
   belongs_to :cat
 
@@ -42,10 +42,33 @@ class CatRentalRequest < ActiveRecord::Base
     overlapping_requests.where(status: :APPROVED)
   end
 
+  def overlapping_pending_requests
+    overlapping_requests.where(status: :PENDING)
+  end
+
   def no_overlapping_approved_requests
     unless overlapping_approved_requests.empty?
       errors[:dates] << "cannot approve two overlapping requests"
     end
+  end
+
+  def approve!
+    transaction do
+      status = "APPROVED"
+      self.save
+      overlapping_pending_requests.each do |request|
+        request.deny!
+      end
+    end
+  end
+
+  def deny!
+    status = "DENIED"
+    self.save
+  end
+
+  def pending?
+    status == "PENDING"
   end
 
 end

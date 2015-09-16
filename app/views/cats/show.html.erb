@@ -34,3 +34,19 @@
   <% end %>
 </tr>
 </table>
+<br>
+<b>Rental Requests</b>
+<br>
+<% @requests = @cat.cat_rental_requests.order(:start_date) %>
+<ul>
+<% @requests.each do |request| %>
+<li>
+ID: <%= request.id %> Start Date: <%= request.start_date %> / End Date: <%= request.end_date %>
+<% if request.pending? %>
+  <%= button_to "Approve", approve_cat_rental_request_path(request), method: 'POST' %> <%= button_to "Deny", deny_cat_rental_request_path(request), method: "POST" %>
+</li>
+
+</ul>
+<br>
+<% end %>
+<% end %>

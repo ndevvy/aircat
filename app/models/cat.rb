@@ -16,7 +16,7 @@ class Cat < ActiveRecord::Base
 
   COLORS = %w(orange black white grey calico)
 
-  has_many: :cat_rental_requests, dependent: :destroy
+  has_many :cat_rental_requests, dependent: :destroy
 
   validates :name, presence: true
   validates :sex, inclusion: { in: %w(M F),
